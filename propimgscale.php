@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Proportional Image Scaling
-Plugin URI: https://code.launchpad.net/~sunside/+junk/wp-propimgscale
+Plugin URI: http://wordpress.org/extend/plugins/proportional-image-scaling/
 Description: This plugin is meant to assist CSS stylesheets in proportionally scaling images in the post using the <code>max-width</code> rule. It will either remove all <em>width</em> and <em>height</em> attributes from images or scale them so that they fit in the given width.
 Author: Markus Mayer
 Version: 1.0
