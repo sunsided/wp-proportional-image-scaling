@@ -23,7 +23,7 @@ browsers in creating the layout.
 Just drop the .php file into the plugins folder and activate it.
 It should work fine out of the box.
 
-== Configuration ==
+= Configuration =
 
 By default, the plugin removes all "width" and "height" attributes from images, that
 contain the term "wp-image-" in their class.
@@ -66,13 +66,9 @@ to the given width. Then the max-width rule caps the width again, leading again 
 distortion. This is normal behavior; Either set the target width to zero in the plugins'
 settings (this should be fail safe), or to the matching max-width value.
 
-== Upgrade Notice ==
-
-(none)
-
 == Screenshots ==
 
-(currently none)
+1. The settings menu.
 
 == Changelog ==
 
