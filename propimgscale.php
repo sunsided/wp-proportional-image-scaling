@@ -279,7 +279,7 @@ class ProportionalImageScaling
     function register_options_page()
     {
         if ( function_exists('add_options_page') )
-			add_options_page(__('Proportional Image Scaling'), __('Proportional Image Scaling'), 8, __FILE__, array(&$this, 'options_menu'));
+            add_options_page(__('Proportional Image Scaling', 'propimgscale'), __('Proportional Image Scaling', 'propimgscale'), 8, __FILE__, array(&$this, 'options_menu'));
     }
 
     function options_menu()
@@ -287,37 +287,37 @@ class ProportionalImageScaling
         $options = get_option('proportionalimagescaling_options');
 
         if ( isset($_POST['Submit']) ) {
-			check_admin_referer('proportionalimagescaling-update-options');
-			$options['width'] = max(0, (int)$_POST['width']);
+            check_admin_referer('proportionalimagescaling-update-options');
+            $options['width'] = max(0, (int)$_POST['width']);
             $options['imgclass'] = $_POST['imgclass'];
             //$options['fallback'] = min(max(0, (int)$_POST['fallback']), 1);
-			update_option('proportionalimagescaling_options', $options);
-			echo '<div id="message" class="updated fade"><p><strong>' . __('Settings saved.') . '</strong></p></div>';
-		}
+            update_option('proportionalimagescaling_options', $options);
+            echo '<div id="message" class="updated fade"><p><strong>' . __('Settings saved.', 'propimgscale') . '</strong></p></div>';
+        }
 
         //$fallback = $options['fallback'];
         //if(empty($fallback)) $fallback = 0;
 
     ?>
         <div class="wrap">
-			<h2><?php _e('Proportional Image Scaling'); ?></h2>
-			<form action="" method="post" id="proportionalimagescaling" accept-charset="utf-8">
-                <h3><?php _e('Basic settings:') ?></h3>
-                <p><?php _e('This plugin is meant to assist CSS stylesheets in proportionally scaling images in the post using the <code>max-width</code> rule.<br />It will either remove all <em>width</em> and <em>height</em> attributes from images or scale them so that they fit in the given width.') ?></p>
-				<h3><?php _e('Basic settings:') ?></h3>
+            <h2><?php _e('Proportional Image Scaling', 'propimgscale'); ?></h2>
+            <form action="" method="post" id="proportionalimagescaling" accept-charset="utf-8">
+                <h3><?php _e('Basic settings:', 'propimgscale') ?></h3>
+                <p><?php _e('This plugin is meant to assist CSS stylesheets in proportionally scaling images in the post using the <code>max-width</code> rule.<br />It will either remove all <em>width</em> and <em>height</em> attributes from images or scale them so that they fit in the given width.', 'propimgscale') ?></p>
+                <h3><?php _e('Basic settings:', 'propimgscale') ?></h3>
                 <table>
                 <tr style="vertical-align: top;">
-                    <td><label for="width"><?php _e('Theme width:') ?></label></td>
+                    <td><label for="width"><?php _e('Theme width:', 'propimgscale') ?></label></td>
                     <td style="padding-left: 20px;">
                         <input id="width" name="width" style="text-align: right;" value="<?php echo max(0, (int)$options['width']) ?>" /> px<br/>
-                        <?php _e("Set this value to <code>0</code> to remove <em>height</em> and <em>width</em> attributes.") ?>
+                        <?php _e("Set this value to <code>0</code> to remove <em>height</em> and <em>width</em> attributes.", 'propimgscale') ?>
                     </td>
                 </tr>
                 <tr style="vertical-align: top;">
-                    <td><label for="imgclass"><?php _e('Image class:') ?></label></td>
+                    <td><label for="imgclass"><?php _e('Image class:', 'propimgscale') ?></label></td>
                     <td style="padding-left: 20px;">
-                        <input id="imgclass" name="imgclass"" value="<?php echo $options['imgclass'] ?>" /> <?php _e("(e.g. <code>wp-image-</code>)") ?><br />
-                        <?php _e("A space separated list of terms that have to be in the images' class attribute in order to activate the resizing process.<br />If no term is set, every image tag will be processed."); ?>
+                        <input id="imgclass" name="imgclass"" value="<?php echo $options['imgclass'] ?>" /> <?php _e("(e.g. <code>wp-image-</code>)", 'propimgscale') ?><br />
+                        <?php _e("A space separated list of terms that have to be in the images' class attribute in order to activate the resizing process.<br />If no term is set, every image tag will be processed.", 'propimgscale'); ?>
                     </td>
                 </tr>
                 <?php /*
@@ -331,10 +331,10 @@ class ProportionalImageScaling
                 */ ?>
                 </table>
 
-				<?php wp_nonce_field('proportionalimagescaling-update-options'); ?>
-				<p class="submit"><input type="submit" name="Submit" class="button-primary" value="<?php _e('Save Changes') ?>"/></p>
-			</form>
-		</div>
+                <?php wp_nonce_field('proportionalimagescaling-update-options'); ?>
+                <p class="submit"><input type="submit" name="Submit" class="button-primary" value="<?php _e('Save Changes', 'propimgscale') ?>"/></p>
+            </form>
+        </div>
     <?php
     }
 }
