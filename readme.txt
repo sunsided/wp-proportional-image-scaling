@@ -3,7 +3,7 @@ Contributors: sunside
 Tags: css, images, scaling
 Requires at least: 2.0
 Tested up to: 2.9
-Stable tag: 1.0.0.1
+Stable tag: 1.0
 
 This plugin is an attempt to prevent distorted images when a CSS max-width rule is 
 in effect and the image is inserted using the visual editor.
@@ -73,4 +73,5 @@ settings (this should be fail safe), or to the matching max-width value.
 == Changelog ==
 
 = 1.0 =
+
 * Initial version
