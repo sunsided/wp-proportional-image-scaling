@@ -35,6 +35,7 @@ class ProportionalImageScaling
         add_action('init', array(&$this, 'init_variables'), 1000 );
         add_filter('the_content', array(&$this, 'filter'), 1000 );
         add_action('admin_menu', array(&$this, 'register_options_page'), 1000 );
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'filter_plugin_actions'), 10, 2 );
     }
 
     // Switches
@@ -397,6 +398,13 @@ class ProportionalImageScaling
     {
         if ( function_exists('add_options_page') )
             add_options_page(__('Proportional Image Scaling', 'propimgscale'), __('Proportional Image Scaling', 'propimgscale'), 8, __FILE__, array(&$this, 'options_menu'));
+    }
+
+    function filter_plugin_actions($links, $file)
+    {
+        $settings_link = '<a href="options-general.php?page=' . plugin_basename(__FILE__) . '">' . __('Settings', 'propimgscale') . '</a>';
+        array_unshift($links, $settings_link); // before other links
+        return $links;
     }
 
     function options_menu()
