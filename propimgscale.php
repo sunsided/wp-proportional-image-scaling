@@ -426,30 +426,32 @@ class ProportionalImageScaling
 
     ?>
         <div class="wrap">
+            <div class="icon32" id="icon-options-general"><br/></div>
             <h2><?php _e('Proportional Image Scaling', 'propimgscale'); ?></h2>
-            <form action="" method="post" id="proportionalimagescaling" accept-charset="utf-8">
+            <form class="form-table" action="" method="post" id="proportionalimagescaling" accept-charset="utf-8">
                 <h3><?php _e('Description', 'propimgscale') ?></h3>
                 <p><?php _e('This plugin is meant to assist CSS stylesheets in proportionally scaling images in the post using the <code>max-width</code> rule.<br />It will either remove all <em>width</em> and <em>height</em> attributes from images or scale them so that they fit in the given width.', 'propimgscale') ?></p>
                 <p><?php printf(__('You can add <code>%s</code> anywhere in a post to disable scaling for that post.', 'propimgscale'), $this->disable_scaling_keyword); ?></p>
                 <h3><?php _e('Basic settings:', 'propimgscale') ?></h3>
                 <table>
-                <tr style="vertical-align: top;">
-                    <td><label for="width"><?php _e('Theme width:', 'propimgscale') ?></label></td>
-                    <td style="padding-left: 20px;">
+                <tbody>
+                <tr valign="top">
+                    <th scope="row"><label for="width"><?php _e('Theme width:', 'propimgscale') ?></label></td>
+                    <td>
                         <input id="width" name="width" style="text-align: right;" value="<?php echo max(0, (int)$options['width']) ?>" /> px<br/>
                         <?php _e("Set this value to <code>0</code> to remove <em>height</em> and <em>width</em> attributes.", 'propimgscale') ?>
                     </td>
                 </tr>
-                <tr style="vertical-align: top;">
-                    <td><label for="imgclass"><?php _e('Image class:', 'propimgscale') ?></label></td>
-                    <td style="padding-left: 20px;">
+                <tr valign="top">
+                    <th scope="row"><label for="imgclass"><?php _e('Image class:', 'propimgscale') ?></label></td>
+                    <td>
                         <input id="imgclass" name="imgclass" value="<?php echo $options['imgclass'] ?>" /> <?php _e("(e.g. <code>wp-image-</code>)", 'propimgscale') ?><br />
                         <?php _e("A space separated list of terms that have to be in the images' class attribute in order to activate the resizing process.<br />If no term is set, every image tag will be processed.", 'propimgscale'); ?>
                     </td>
                 </tr>
-                <tr style="vertical-align: top;">
-                    <td><label for="imgexclass"><?php _e('Exclude class:', 'propimgscale') ?></label></td>
-                    <td style="padding-left: 20px;">
+                <tr valign="top">
+                    <th scope="row"><label for="imgexclass"><?php _e('Exclude class:', 'propimgscale') ?></label></td>
+                    <td>
                         <input id="imgexclass" name="imgexclass" value="<?php echo $options['imgexclass'] ?>" /> <?php _e("(e.g. <code>size-large</code>)", 'propimgscale') ?><br />
                         <?php _e("A space separated list of terms that <em>must not</em> be in the images' class.<br />If no term is set, images are only matched against the include class rule above.", 'propimgscale'); ?>
                     </td>
@@ -463,6 +465,7 @@ class ProportionalImageScaling
                     </td>
                 </tr>
                 */ ?>
+                </tbody>
                 </table>
 
                 <?php wp_nonce_field('proportionalimagescaling-update-options'); ?>
