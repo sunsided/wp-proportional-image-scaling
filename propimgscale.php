@@ -4,7 +4,7 @@ Plugin Name: Proportional Image Scaling
 Plugin URI: http://wordpress.org/extend/plugins/proportional-image-scaling/
 Description: This plugin is meant to assist CSS stylesheets in proportionally scaling images in the post using the <code>max-width</code> rule. It will either remove all <em>width</em> and <em>height</em> attributes from images or scale them so that they fit in the given width.
 Author: Markus Mayer
-Version: 1.0
+Version: 1.1
 Author URI: http://blog.defx.de
 License: GPL2
 
@@ -37,9 +37,17 @@ class ProportionalImageScaling
         add_action('admin_menu', array(&$this, 'register_options_page'), 1000 );
     }
 
+    // Switches
+    var $use_fastmatch = FALSE; // set to TRUE to revert to stripos() in case of errors with the move_to() function
+
+    // Variables
     var $theme_width = 0;
     var $fallback_behavior = 0;
     var $image_classes = array('wp-image-');
+    var $image_classes_exclude = array();
+
+    // Keywords
+    var $disable_scaling_keyword = "[disable_image_scaling]";
 
     function init_variables()
     {
@@ -55,18 +63,24 @@ class ProportionalImageScaling
 
         $this->theme_width = $options["width"];
         $this->image_classes = @explode(' ', $options['imgclass']);
+        $this->image_classes_exclude = @explode(' ', $options['imgexclass']);
         // $this->fallback_behavior = $options['fallback'];
     }
 
     // filters the content
     function filter($content)
     {
+        // if scaling is disabled, exit
+        if(stristr($content, $this->disable_scaling_keyword) !== FALSE) {
+            return str_ireplace($this->disable_scaling_keyword, '', $content);
+        }
+
         $contentLength = strlen($content);
         $startindex = 0;
         do
         {
             // find img tag
-            $index = stripos($content, "<img", $startindex);
+            $index = $this->move_to($content, "<img", $startindex);
             if($index === FALSE) break; // exit condition
             $startindex = $index;
 
@@ -86,7 +100,7 @@ class ProportionalImageScaling
                     $tag = substr($content, $startindex, $length);
 
                     // get replacement text
-                    $replacement = $this->do_scaling_foo($tag, $this->theme_width, $this->image_classes, $this->fallback_behavior);
+                    $replacement = $this->do_scaling_foo($tag, $this->theme_width, $this->image_classes, $this->image_classes_exclude, $this->fallback_behavior);
                     if($replacement === FALSE)
                     {
                         $startindex += $length;
@@ -110,7 +124,7 @@ class ProportionalImageScaling
     // extracts an attribute from the tag
     function extract_attr($tag, $attribute)
     {
-        $attrIndex = stripos($tag, $attribute);
+        $attrIndex = $this->move_to($tag, $attribute, TRUE);
         if($attrIndex === FALSE) return FALSE;
 
         // check if this is the start of the word
@@ -120,7 +134,7 @@ class ProportionalImageScaling
             if(!ctype_space($pre) && $pre != '"') return FALSE;
         }
 
-        $index = stripos($tag, '=', $attrIndex);
+        $index = $this->move_to($tag, '=', $attrIndex, TRUE);
         if($index === FALSE) return FALSE;
 
         // find attribute end, starting at the current index
@@ -173,7 +187,7 @@ class ProportionalImageScaling
     }
 
     // scales the image (tag) to the given width
-    function do_scaling_foo($tag, $target_width, $class_rule = FALSE, $fallback = 0)
+    function do_scaling_foo($tag, $target_width, $class_rule = FALSE, $class_exclude_rule = FALSE, $fallback = 0)
     {
         $width = $this->extract_attr($tag, 'width');
         $height = $this->extract_attr($tag, 'height');
@@ -187,6 +201,7 @@ class ProportionalImageScaling
         if($w <= $target_width || $w <= 0) return FALSE;
 
         // check class attribute, skip non-wp-image-... images
+        $class = FALSE;
         if($class_rule !== FALSE && !empty($class_rule))
         {
             $class = $this->extract_attr($tag, 'class');
@@ -194,6 +209,15 @@ class ProportionalImageScaling
             {
                 if(empty($term)) continue;
                 if(stripos($class["value"], $term) === FALSE) return FALSE;
+            }
+        }
+        if($class_exclude_rule !== FALSE && !empty($class_exclude_rule))
+        {
+            if(empty($class)) $class = $this->extract_attr($tag, 'class');
+            foreach($class_exclude_rule as $term)
+            {
+                if(empty($term)) continue;
+                if(stripos($class["value"], $term) !== FALSE) return FALSE;
             }
         }
 
@@ -276,6 +300,99 @@ class ProportionalImageScaling
         return $tag;
     }
 
+    // like stripos, but with escaping
+    // since 1.1
+    function move_to($haystack, $needle, $startindex = 0, $inTag = FALSE, $inComment = FALSE, $inQuotes = FALSE)
+    {
+        if($this->use_fastmatch) return stripos($haystack, $needle, $startindex);
+
+        $length = strlen($haystack);
+        $needleLen = strlen($needle);
+        if(!$length || !$needleLen) return FALSE;
+        $startindex = max(0, $startindex);
+
+        // loop through the content
+        $needleIdx = 0;
+        $index = $startindex - 1;
+        while($index < $length)
+        {
+            ++$index;
+            if($index == $length) return FALSE;
+
+            // comment handling
+            if($inComment)
+            {
+                if(substr($haystack, $index, 3) == '-->')
+                {
+                    $inComment = FALSE;
+                    $index += 2;
+                    continue;
+                }
+                continue;
+            }
+
+            // get char
+            $char = $haystack[$index];
+
+            // check for quotes
+            if($inQuotes)
+            {
+                if($char == '"') $inQuotes = FALSE;
+                continue;
+            }
+
+            // check for tag start
+            if(!$inTag)
+            {
+                if($char == '<')
+                {
+                    $next = $haystack[$index+1];
+                    if(ctype_alpha($next))
+                    {
+                        $inTag = TRUE;
+                    }
+                    else if($next == '/' && ctype_alpha($haystack[$index+2]))
+                    {
+                        $inTag = TRUE;
+                        $index++;
+                        continue;
+                    }
+                    else if(substr($haystack, $index, 4) == '<!--')
+                    {
+                        $inComment = TRUE;
+                        $index += 3;
+                        continue;
+                    }
+                }
+            }
+            else
+            {
+                if($char == '"')
+                {
+                    $inQuotes = TRUE;
+                    continue;
+                }
+                if($char == '/' || $char == '>')
+                {
+                    $inTag = FALSE;
+                    continue;
+                }
+            }
+
+            // check for first character of needle
+            if(strcasecmp($char, $needle[0]) != 0) continue;
+
+            // needle match, check against full needle
+            $slice = substr($haystack, $index, $needleLen);
+            if(strcasecmp($slice, $needle) != 0) continue;
+
+            // success
+            return $index;
+        }
+
+        return FALSE;
+    }
+
     function register_options_page()
     {
         if ( function_exists('add_options_page') )
@@ -290,6 +407,7 @@ class ProportionalImageScaling
             check_admin_referer('proportionalimagescaling-update-options');
             $options['width'] = max(0, (int)$_POST['width']);
             $options['imgclass'] = $_POST['imgclass'];
+            $options['imgexclass'] = $_POST['imgexclass'];
             //$options['fallback'] = min(max(0, (int)$_POST['fallback']), 1);
             update_option('proportionalimagescaling_options', $options);
             echo '<div id="message" class="updated fade"><p><strong>' . __('Settings saved.', 'propimgscale') . '</strong></p></div>';
@@ -302,8 +420,9 @@ class ProportionalImageScaling
         <div class="wrap">
             <h2><?php _e('Proportional Image Scaling', 'propimgscale'); ?></h2>
             <form action="" method="post" id="proportionalimagescaling" accept-charset="utf-8">
-                <h3><?php _e('Basic settings:', 'propimgscale') ?></h3>
+                <h3><?php _e('Description', 'propimgscale') ?></h3>
                 <p><?php _e('This plugin is meant to assist CSS stylesheets in proportionally scaling images in the post using the <code>max-width</code> rule.<br />It will either remove all <em>width</em> and <em>height</em> attributes from images or scale them so that they fit in the given width.', 'propimgscale') ?></p>
+                <p><?php printf(__('You can add <code>%s</code> anywhere in a post to disable scaling for that post.'), $this->disable_scaling_keyword); ?></p>
                 <h3><?php _e('Basic settings:', 'propimgscale') ?></h3>
                 <table>
                 <tr style="vertical-align: top;">
@@ -316,8 +435,15 @@ class ProportionalImageScaling
                 <tr style="vertical-align: top;">
                     <td><label for="imgclass"><?php _e('Image class:', 'propimgscale') ?></label></td>
                     <td style="padding-left: 20px;">
-                        <input id="imgclass" name="imgclass"" value="<?php echo $options['imgclass'] ?>" /> <?php _e("(e.g. <code>wp-image-</code>)", 'propimgscale') ?><br />
+                        <input id="imgclass" name="imgclass" value="<?php echo $options['imgclass'] ?>" /> <?php _e("(e.g. <code>wp-image-</code>)", 'propimgscale') ?><br />
                         <?php _e("A space separated list of terms that have to be in the images' class attribute in order to activate the resizing process.<br />If no term is set, every image tag will be processed.", 'propimgscale'); ?>
+                    </td>
+                </tr>
+                <tr style="vertical-align: top;">
+                    <td><label for="imgexclass"><?php _e('Exclude class:', 'propimgscale') ?></label></td>
+                    <td style="padding-left: 20px;">
+                        <input id="imgexclass" name="imgexclass" value="<?php echo $options['imgexclass'] ?>" /> <?php _e("(e.g. <code>size-large</code>)", 'propimgscale') ?><br />
+                        <?php _e("A space separated list of terms that <em>must not</em> be in the images' class.<br />If no term is set, images are only matched against the include class rule above.", 'propimgscale'); ?>
                     </td>
                 </tr>
                 <?php /*

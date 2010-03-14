@@ -3,7 +3,7 @@ Contributors: sunside
 Tags: css, images, scaling
 Requires at least: 2.0
 Tested up to: 2.9
-Stable tag: 1.0
+Stable tag: 1.1
 
 This plugin is an attempt to prevent distorted images when a CSS max-width rule is 
 in effect and the image is inserted using the visual editor.
@@ -38,7 +38,6 @@ If one of these terms is missing, the image is not processed.
 == Known Limiations ==
 
 * Currently, only pixel values are supported when scaling.
-* Currently, you cannot explicitely exclude image tags from being processed.
 
 == Frequently Asked Questions ==
 
@@ -56,11 +55,15 @@ It's basically a setting for purists.
 
 = Can I exclude images? =
 
-Currently not. Images are excluded implicitely when their CSS class doesn't match a term or a set of terms.
+Yes, by their CSS class.
 
-= After editing my theme, the images are distorted again =
+= Can I disable the plugin on a per-post base? =
 
-This might be due to the plugins configuration. If a target width larger than zero, 
+Yes, by adding `[disable_image_scaling]` anywhere in the post.
+
+= After editing or changing my theme, the images are distorted again =
+
+This might be due to the plugin's configuration. If a target width larger than zero, 
 but smaller than the (new) theme's max-width value is set, the images will be scaled 
 to the given width. Then the max-width rule caps the width again, leading again to the 
 distortion. This is normal behavior; Either set the target width to zero in the plugins'
@@ -71,6 +74,12 @@ settings (this should be fail safe), or to the matching max-width value.
 1. The settings menu.
 
 == Changelog ==
+
+= 1.1 =
+
+* Added class exclude setting
+* Made the matching algorithm more robust to unexpected html.
+* Added [disable_image_scaling] keyword support
 
 = 1.0 =
 
