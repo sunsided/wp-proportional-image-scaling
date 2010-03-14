@@ -422,7 +422,7 @@ class ProportionalImageScaling
             <form action="" method="post" id="proportionalimagescaling" accept-charset="utf-8">
                 <h3><?php _e('Description', 'propimgscale') ?></h3>
                 <p><?php _e('This plugin is meant to assist CSS stylesheets in proportionally scaling images in the post using the <code>max-width</code> rule.<br />It will either remove all <em>width</em> and <em>height</em> attributes from images or scale them so that they fit in the given width.', 'propimgscale') ?></p>
-                <p><?php printf(__('You can add <code>%s</code> anywhere in a post to disable scaling for that post.'), $this->disable_scaling_keyword); ?></p>
+                <p><?php printf(__('You can add <code>%s</code> anywhere in a post to disable scaling for that post.', 'propimgscale'), $this->disable_scaling_keyword); ?></p>
                 <h3><?php _e('Basic settings:', 'propimgscale') ?></h3>
                 <table>
                 <tr style="vertical-align: top;">
