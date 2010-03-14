@@ -48,9 +48,9 @@ When in doubt: 0.
 = Whats difference does it make when I enter a width? =
 
 If you enter a value of 0, the width and height attribute are removed. While this
-plays nicely with any CSS rules, it may be desirable to set these values in order
-to allow browser to lay out the page before the images are loaded. Setting a
-width and height allows the plugin to scale these values so they fit int the design. 
+works, it may be desirable to set these values in order to allow browsers to lay 
+out the page before the images are loaded. Setting a width and height allows the 
+plugin to scale these values so they fit int the design. 
 It's basically a setting for purists.
 
 = Can I exclude images? =
