@@ -2,7 +2,7 @@
 Contributors: sunside
 Tags: css, images, scaling
 Requires at least: 2.0
-Tested up to: 2.9
+Tested up to: 4.5.2
 Stable tag: 1.1
 
 This plugin is an attempt to prevent distorted images when a CSS max-width rule is 
